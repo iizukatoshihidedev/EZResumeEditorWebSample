@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>超簡単職務経歴書エディタ</title>
+    <!--Script-->
+	<script src="../../BasicTool/main.js"></script>
+	<script src="../../BasicTool/ga.js"></script>
+	<script src="./program.js"></script>
+    <!--Script-->
+    <style>
+        body {
+            text-align: center;
+        }
+        
+        .form {
+            background-color: skyblue;
+            padding: 10px 20px;
+            //visibility: hidden;
+        }
+        
+        textarea {
+            max-width:1200px;
+            margin: 3px auto;
+        }
+        
+        //テキストエリアの改行
+        p {
+            white-space: pre-wrap;
+        }
+        
+        #info {
+            text-align: right;
+        }
+        
+        #other {
+            text-align: left;
+            max-width:1200px;
+            margin: 3px auto;
+        }
+        
+        h2 {
+            text-align: left;
+            margin-left: 100px;
+            width: auto;
+        }
+        table {
+            text-align: center;
+            margin: 3px auto;
+            max-width:1200px;
+            border-collapse: collapse;
+        }
+        
+        table th{
+            border: solid 1px black;
+            background-color: lightgray;
+            text-align: center;
+        }
+        
+        table td {
+            border: solid 1px black;
+            text-align: center;
+        }
+        
+        #board {
+            margin : 0 auto 40px;
+            width : 100%;
+            font-size : 64px;
+            text-align : center;
+            overflow : hidden;
+        }
+        #board p{
+            margin:0;
+            display : inline-block;
+            padding-left: 100%;
+            white-space : nowrap;
+            line-height : 1em;
+            animation : scrollBoard 15s linear;
+        }
+            @keyframes scrollBoard{
+            0% { transform: translateX(0)}
+            100% { transform: translateX(-100%)}
+        }
+        
+        .balloon1-left {
+            position: relative;
+            display: inline-block;
+            margin: 1.5em 0 1.5em 15px;
+            padding: 7px 10px;
+            min-width: 120px;
+            max-width: 100%;
+            color: #555;
+            font-size: 16px;
+            background: #e0edff;
+        }
+
+        .balloon1-left:before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: -30px;
+            margin-top: -15px;
+            border: 15px solid transparent;
+            border-right: 15px solid #e0edff;
+        }
+
+        .balloon1-left p {
+            margin: 0;
+            padding: 0;
+        }
+        
+        #footer {
+            position: relative;
+            display: inline-block;
+            bottom:0px;;
+            left: 0px;
+            width:100%;
+            color: #aaa;
+            font-size: 16px;
+            background: #555;
+        }
+    </style>
+</head>
+<body onload="init();">
+    <div class="form" id="form">
+        <h1>超簡単職務経歴書エディタ</h1>
+        <h3>経歴データ入力</h3>
+        名前：<input type="text" name="name" id="name" size="50" value="ななしさん" onchange="save();"><br/>
+        <textarea id="edit" name="edit" cols=120 rows=10></textarea><br/>
+        <button onclick="drawresume();">表示してみる</button><br/>
+        <p>1:番号,2:期間,3:会社名,4:概要,5:詳細,6:開発環境,7:役割,8:年収</p>
+        <p>フォーマット:CSV形式(Excelで出力可能) 区切り文字:,(コロン) 次のデータ入力:改行</p>
+        <h4>入力例</h4>
+        <textarea id="sample" readonly cols=120 rows=2></textarea>
+    </div>
+    <hr/>
+    <h1>職務経歴書</h1>
+    <div id="info">データを読み込みます</div>
+    <h2>■職務概要</h2>    
+    <div id="about">データを読み込みます</div>
+    <h2>■職務経歴</h2>    
+    <div id="description">データを読み込みます</div>
+    <h2>■その他</h2>    
+    <div id="other">
+        <textarea id="edit2" name="edit2" cols=180 rows=20>■ 保有資格 なし
+■ テクニカルスキル
+Mac、Windows、Linuxなど アプリ開発に必要なスキル(Objective-C、Swiftなど) デザインスキル(Adobe Photoshop、SketchAppなど) サーバ設定から運用経験(Web、Ftp、Mail、Apache、DBなど) Webサイト制作に必要なスキル(Html、JavaScript、Cなど) Web開発に必要なスキル(Html、Perlなど) ドキュメント作成(Word、Excel、Poweroint)
+■ 得意分野 設計・開発・企画・交渉、iOS分野は得に強いです
+■ 趣味 音楽制作、作曲、写真撮影など
+■ 自己PR 私はこれまで一貫して自己目標実現のために未知への領域へ踏み込み続け、挑戦を続けてきました。 IT関連業種への転職を志して以来様々なコンピューターに関わる仕事に携わりiOS(iPhone、iPadなど)向けシステム開発に携わっておりましたが近年では様々なシステム開発、特に総務省の開発にも招かれた経験は大きいかと存じます。また、これまで様々な業態での仕事経験の中でいずれの場所・場面でも積極的に行動して職務を遂行し、良い結果をもたらすよう努めてまいりました。
+仕事以外にも積極的な活動を行う中で勉強会の主催やアプリのリリースなども多数行ってまいりました。また企業主催のハッカソンなどにも参加し度々リーダーを担当し、主にメンバーをまとめる力や、成果へとつなげる力、目標の実現について事実上でも単なる偶然とは言い難い数々の実績を残してきていると自負しております。また、熱意と実現力、実行力においては誰にも負けないエネルギーを持っていると自負しております。
+近年はより質の高い開発を目指すためにデザイン分野への取り組みやコンサルタントやアドバイザーとしても活動しております。企業分析を元に 適切な戦略仮説を立案し、それに基づく戦略、サービス、システム、デザインの提案と分析の結果から一貫して総合的に考えることができる点で強みがあると思っています。なおかつ、趣味と仕事が一致しておりものを生み出すことが大変好きです。将来的にはより社会に貢献できるサービスの立案や実現がしたいと考えています。\n今後はこれまでの経験を活かし、御社へ貢献し私も共々一層の成長と活躍ができるよう取り組んで参りたいと考えております。何卒よろしくお願い致します。</textarea><br/>
+        <button onclick="drawother();">表示してみる</button><br/>
+    </div>
+    <hr/>
+    <div id="board"></div>
+    <div id="footer">
+        <script>
+            document.write("2021©️" + document.domain);
+        </script>
+    </div>
+</body>
+</html>
